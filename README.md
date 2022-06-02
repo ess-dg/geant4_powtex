@@ -73,10 +73,13 @@ Before compiling the application please edit the PrimaryGenerator.cc file and re
 The file PrimaryGeneratorAction.cc.GPS is also provided for the case the user wishes to 
 generate monochromatic neutrons from a source located at the sample position in order to test the detector setup. Copy this file to PrimaryGeneratorAction.cc, compile and run as usual (see pct. 5):  
 
-% cp PrimaryGeneratorAction.cc PrimaryGeneratorAction.cc.file
-% cp PrimaryGeneratorAction.cc.GPS PrimaryGeneratorAction.cc
-% ./compile_Powtex_cmake.sh
-% ./Powtex  run.mac
+% cp PrimaryGeneratorAction.cc PrimaryGeneratorAction.cc.file 
+
+% cp PrimaryGeneratorAction.cc.GPS PrimaryGeneratorAction.cc 
+
+% ./compile_Powtex_cmake.sh 
+
+% ./Powtex  run.mac 
 
    
 4 - TRACKING
