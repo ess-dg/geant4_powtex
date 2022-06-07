@@ -43,9 +43,9 @@ Generation of the voxel lookup table
 
 In order to convert the data from the TOF space to the wavelength space one needs to know the precise location in the coordinate space of the voxel in which the neutron was detected. The PowtexMantleConstruction.icc file also generates the table with the x-, y- and z- coordinates of the centers of the gas voxels with respect to the origin of the reference system (i.e., the sample position). The table is created and saved in the LookupTablePowtex.txt ascii file each time the code is excecuted. The format of the table is as following:  
 	
- det_ID	  sector#   100*module#+segment#  wire#.   strip#.   counter#	x-pos.      y-pos.     z-pos     
+ det_ID	 | sector# |  100*module#+segment# | wire#  | strip# |   counter#  |	x-pos |      y-pos |     z-pos     |
 	
-   7         1		   101     	    1         1         1      278.436     759.200      3.339
+  | 7     |    1	|	   101     	    1         1         1      278.436     759.200      3.339
 	
    7         1   	   101     	    1         2         1      278.436     759.200     10.017
 	
