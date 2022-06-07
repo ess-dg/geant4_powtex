@@ -18,7 +18,7 @@ The simulation strategy is explained in detail in the following reference:
     powder diffractometer HEIMDAL through GEANT4 simulations, 
     Journal of Instrumentation, 14 P10020, 2019. 
 
-	[paper](https://iopscience.iop.org/article/10.1088/1748-0221/14/10/P10020) 
+	https://iopscience.iop.org/article/10.1088/1748-0221/14/10/P10020
 
 1 - GEOMETRY DEFINITION
 ------------------------
@@ -42,14 +42,14 @@ In the real detector the common cathode separating the two wire counters in the 
 
 In order to convert the data from the TOF space to the wavelength space one needs to know the precise location in the coordinate space of the voxel in which the neutron was detected. The PowtexMantleConstruction.icc file also generates the table with the x-, y- and z- coordinates of the centers of the gas voxels with respect to the origin of the reference system (i.e., the sample position). The table is created and saved in the *LookupTablePowtex.txt* ascii file each time the code is executed. The format of the table is as following:  
 	
- |  det_ID	 | sector# |  100*module#+segment# | wire#  | strip# |   counter#  |	x-pos  |   y-pos    |   z-pos    |
- |---------------|---------|-----------------------|--------|--------|-------------|-----------|------------|------------|
- |      7     	 |    1	   |	   101     	   |   1    |    1   |      1      |  278.436  |   759.200  |    3.339   |
- |  	7        |    1    |   	   101     	   |   1    |    2   |      1      |  278.436  |   759.200  |   10.017   |
- |  	7        |    1    |	   101             |   1    |    3   |      1      |  278.436  |   759.200  |   16.697   |
- |  	7        |    1    |       101     	   |   1    |    4   |      1      |  278.436  |   759.200  |   23.380   |
- |  	7        |    1    |       101             |   1    |    5   |      1      |  278.436  |   759.200  |   30.066   |	
- |  	7        |    1    |       101             |   1    |    6   |      1      |  278.436  |   759.200  |   36.757  |
+ |  det_ID	 | sector# |  100*module#+segment# | wire#  | strip# |   counter#  |	x-voxel  |   y-voxel  |   z-voxel  |
+ |---------------|---------|-----------------------|--------|--------|-------------|-------------|------------|------------|
+ |      7     	 |    1	   |	   101     	   |   1    |    1   |      1      |  278.436    |   759.200  |    3.339   |
+ |  	7        |    1    |   	   101     	   |   1    |    2   |      1      |  278.436    |   759.200  |   10.017   |
+ |  	7        |    1    |	   101             |   1    |    3   |      1      |  278.436    |   759.200  |   16.697   |
+ |  	7        |    1    |       101     	   |   1    |    4   |      1      |  278.436    |   759.200  |   23.380   |
+ |  	7        |    1    |       101             |   1    |    5   |      1      |  278.436    |   759.200  |   30.066   |	
+ |  	7        |    1    |       101             |   1    |    6   |      1      |  278.436    |   759.200  |   36.757  |
 	
  and so on .......	
 
@@ -67,7 +67,7 @@ where:
 	
 	counter# = counter number, it takes values from 1 to 4 corresponding to the 4 groups of voxels as describe above.
 	
-	x-pos, y-pos, z-pos = coordinates of the voxel centers with respect to the sample position,which is located at (0,0,0).
+	x-voxel, y-voxel, z-voxel = coordinates of the voxel centers with respect to the sample position,which is located at (0,0,0).
 	
   
 2 - PHYSICS LIST
@@ -184,4 +184,42 @@ The imprint number is used by the code to extract the module and segment number 
     
 6 - DATA ANALYSIS
     --------------------
+
+The results of the tracking performed by the SteppingAction() class are saved in ascii format in the *myfile_info.txt* output file. 
+Each line of the file corresponds to a detected neutron in the detector and consists of the information that allows for the hardware (module, segment, wire and strip numbers) and spatial identification of the position of the neutron detected in the detector volume (x, y, z coordinates with respect to the sample position):
+	
+ | tof [ns]  | StepNo | dd | detID | sector# | module# | segment# | voxel# | counter# |  weight | Edep[MeV]|  x-pos  |  y-pos   |   z-pos  |
+ |-----------|--------|----|-------|---------|---------|----------|--------|----------|---------|----------|---------|----------|----------|
+ | 46952554  |   2    |	10 |	7  |	1    |	 25    |    2     |  2380  |	2     |2.207e-07| 1.37726  | -828.739|	-3.56731| -263.792 |
+ | 46953099  |   2    |	10 |	7  |	1    |	 25    |    2     |  2381  |	4     |2.222e-07| 1.20842  | -831.393|	-1.94727| -264.648 |
+ | 46953100  |   3    |	10 |	7  |	1    |	 25    |    2     |  2385  |	4     |2.222e-07| 1.06368  | -832.684|	-1.53864| -264.836 |
+ | 47054207  |   2    |	10 |	7  |	1    |	 18    |    3     |  3985  |	4     |3.704e-07| 1.36819  | -219.064|	-808.841| -471.545 |
+ | 47054208  |   4    |	10 | 	7  |	1    |	 18    |    3     |  3921  | 	4     |3.704e-07| 1.10039  | -220.057|	-809.705| -470.734 |
+ | 47282399  |   2    |	10 | 	7  |	1    |	 16    |    7     |  5845  | 	4     |9.481e-07| 1.11933  | 165.571 |	-834.323| -801.981 |
+ | 47212947  |   3    |	20 |	7  |	1    |	 16    |    7     |  5832  |	2     |9.471e-07| 0.487803 | 156.567 |	-789.423| -756.576 |
+	
+ and so on .......	
+
+where:  
+	
+	tof = total time-of-flight in [ns] from the inception of the neutron until detection in detector (=t~i~n~s~t~r + t_sample-detector)
+	
+	det_ID = detector system ID, = 7 for Mantle.
+	
+	sector# = sector number, only relevant for the DREAM High-Resolution and SANS detectors, always 1 otherwise.
+	
+	100*module# + segment# = linear combination of the module and segment number. segment# takes values from 1 to 8. 
+	
+	wire# = wire number, it takes values from 1 to 16.
+	
+	strip# = strip number, it takes values from 1 to 96 (1/2 of the total number of strips).
+	
+	counter# = counter number, it takes values from 1 to 4 corresponding to the 4 groups of voxels as describe above.
+	
+	x-voxel, y-voxel, z-voxel = coordinates of the voxel centers with respect to the sample position,which is located at (0,0,0).
+	
+  
+	
+	
+	
 	
