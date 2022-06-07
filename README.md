@@ -202,7 +202,7 @@ Each line of the file corresponds to a detected neutron in the detector and cons
 
 where:  
 	
-	tof = total time-of-flight in [ns] from the inception of the neutron until detection in detector (=t~i~n~s~t~r + t_sample-detector)
+	tof = total time-of-flight in [ns] from the inception of the neutron until detection in detector (=t<sub>instr</sub> + t~sample-detector)
 	
 	det_ID = detector system ID, = 7 for Mantle.
 	
