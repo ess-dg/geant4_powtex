@@ -20,7 +20,7 @@ The simulation strategy is explained in detail in the following reference:
     powder diffractometer HEIMDAL through GEANT4 simulations, 
     Journal of Instrumentation, 14 P10020, 2019. 
 
-	(https://iopscience.iop.org/article/10.1088/1748-0221/14/10/P10020)
+(https://iopscience.iop.org/article/10.1088/1748-0221/14/10/P10020)
 	
 The usage of the code is sketched in the figures included below, showing the simulation flow:
 
