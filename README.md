@@ -6,6 +6,8 @@ the POWTEX diffractometer at FRM2.
 
 Written by Irina Stefanescu, ESS Detector Group, 2022. 
 
+irina.stefanescu@ess.eu
+
 Tested with geant4-11.0.2 in May 2022.  
 
 Tested on Mac iOS Catalina and CentOS8_2 in February 2022. 
@@ -18,7 +20,16 @@ The simulation strategy is explained in detail in the following reference:
     powder diffractometer HEIMDAL through GEANT4 simulations, 
     Journal of Instrumentation, 14 P10020, 2019. 
 
-	https://iopscience.iop.org/article/10.1088/1748-0221/14/10/P10020
+	(https://iopscience.iop.org/article/10.1088/1748-0221/14/10/P10020)
+	
+The usage of the code is sketched in the figures included below, showing the simulation flow:
+
+<img width="717" alt="Screenshot 2022-06-08 at 13 31 12" src="https://user-images.githubusercontent.com/54177908/172606854-c245faa2-4672-4e82-8b5a-94c916e7cfff.png">
+
+
+<img width="721" alt="Screenshot 2022-06-08 at 13 31 19" src="https://user-images.githubusercontent.com/54177908/172606379-1570482b-1815-4922-9241-b6d141d4a9ff.png">
+
+
 
 1 - GEOMETRY DEFINITION
 ------------------------
@@ -272,7 +283,7 @@ The script *analysis_powtex.C* reads in the powtex.root and powtex_lookup.root f
 	- it uses the ID of the detection voxel (information stored in the 'voxel'-branch of the *powtex_ev* tree) and generates the wire and the strip numbers corresponding to that specific voxel. 
 	- it uses the position and TOF information for each detected neutron to calculate the distance from the sample (variable *rad*), the 2theta and phi angles and the wavelength and d_spacing. 
 	- it creates a new root tree *powtex_new* which contains the same branches as the old data tree *powtex_ev* plus a few new branches storing the information on the wire and strip numbers, wavelength, 2theta, phi, d_spacing, etc. 
-	- it loops over all neutron events stored in the *powtex_new* tree and for each neutron event it finds the center of the voxel, information which is stored in the powtex_lookup.root file. This information is saved in the powtex_new_cal.root file, which will contain the powtex_new_cal *tree friend* (read here the concept of *tree friend* https://root.cern/root/htmldoc/guides/users-guide/Trees.html#example-3-adding-friends-to-trees). The tree friend *powtex_new_cal* has the same number of entries as the event data tree *powtex_new*. The branches of the tree friend can be easily accessed like any other branch of the *powtex_new* event tree after being opened with the help of the 'AddFriend' method:
+	- it loops over all neutron events stored in the *powtex_new* tree and for each neutron event it finds the center of the voxel, information which is stored in the powtex_lookup.root file. The voxel centers are saved in the powtex_new_cal.root file as the branches *nvoxel_x, nvoxel_y* and  *nvoxel_z* of the powtex_new_cal *tree friend* (read here the concept of *tree friend*: https://root.cern/root/htmldoc/guides/users-guide/Trees.html#example-3-adding-friends-to-trees). The tree friend *powtex_new_cal* will have the same number of entries as the event data tree *powtex_new*. The branches of the tree friend can be easily accessed like any other branch of the *powtex_new* event tree after being opened with the help of the 'AddFriend' method:
 	
 	% root -l powtex.root
 	root[0] powtex_new->AddFriend("powtex_new_cal","powtex_new_cal.root")
