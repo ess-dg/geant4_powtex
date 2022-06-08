@@ -61,13 +61,13 @@ where:
 	
 	100*module# + segment# = linear combination of the module and segment number. segment# takes values from 1 to 8. 
 	
-	wire# = wire number, it takes values from 1 to 16.
+	wire# = wire number. It takes values from 1 to 16.
 	
-	strip# = strip number, it takes values from 1 to 96 (1/2 of the total number of strips).
+	strip# = strip number. It takes values from 1 to 96 (1/2 of the total number of strips).
 	
-	counter# = counter number, it takes values from 1 to 4 corresponding to the 4 groups of voxels as describe above.
+	counter# = counter number. It takes values from 1 to 4 corresponding to the 4 groups of voxels as describe above.
 	
-	x-voxel, y-voxel, z-voxel = coordinates of the voxel centers with respect to the sample position,which is located at (0,0,0).
+	x-voxel, y-voxel, z-voxel = coordinates of the voxel centers with respect to the sample position, which is located at (0,0,0).
 	
   
 2 - PHYSICS LIST
@@ -159,7 +159,7 @@ The imprint number is used by the code to extract the module and segment number 
 	Idle> exit
 	
 6 - USAGE for debugging and learning purposes
-    --------------------------------------------
+--------------------------------------------
     
     If you want to get familar with the model and investigate the tracking results you can 
     save the standard GEANT4 output information in a file:
@@ -182,8 +182,10 @@ The imprint number is used by the code to extract the module and segment number 
  	 In the case of running with a large VITESS input file it is recommended to set the UI 
  	 commands above to 0 in order to avoid a slowing down the calculation.  
     
-6 - DATA ANALYSIS
-    --------------------
+7 - DATA ANALYSIS WITH ROOT
+---------------------------
+	
+	https://root.cern/
 
 The results of the tracking performed by the SteppingAction() class are saved in ascii format in the *myfile_info.txt* output file. 
 Each line of the file corresponds to a detected neutron in the detector and consists of the information that allows for the hardware (module, segment, wire and strip numbers) and spatial identification of the position of the neutron detected in the detector volume (x, y, z coordinates with respect to the sample position):
@@ -202,24 +204,86 @@ Each line of the file corresponds to a detected neutron in the detector and cons
 
 where:  
 	
-	tof = total time-of-flight in [ns] from the inception of the neutron until detection in detector (=t<sub>instr</sub> + t~sample-detector)
+	tof = total time-of-flight in [ns] from the inception of the neutron in the Vitess moderator until detection in detector (=t<sub>instr</sub> + t<sub>sample-detector</sub>)
 	
-	det_ID = detector system ID, = 7 for Mantle.
+	StepNo = number of interactions of the incident neutron with the detector materials before absorption in the Boron converter. 
+	
+	dd = identifier for the Boron layer in which the neutron was absorbed. dd=10 if the absorption took place in the converter applied on the cathode and dd=20 if the conversion took place in the Boron layer applied on the segment housing.  
+	
+	det_ID = detector system ID. det_ID = 7 for Mantle.
 	
 	sector# = sector number, only relevant for the DREAM High-Resolution and SANS detectors, always 1 otherwise.
 	
-	100*module# + segment# = linear combination of the module and segment number. segment# takes values from 1 to 8. 
+	module# = detector module number.  
 	
-	wire# = wire number, it takes values from 1 to 16.
+	segment# = segment number. It takes values from 1 to 8. 
 	
-	strip# = strip number, it takes values from 1 to 96 (1/2 of the total number of strips).
+	voxel# = gas voxel number. 
 	
-	counter# = counter number, it takes values from 1 to 4 corresponding to the 4 groups of voxels as describe above.
+	counter# = counter number. It takes values from 1 to 4 corresponding to the 4 groups of voxels as describe above.
 	
-	x-voxel, y-voxel, z-voxel = coordinates of the voxel centers with respect to the sample position,which is located at (0,0,0).
+	weight = neutron weight. Value inherited from VITESS. 
 	
-  
+	Edep = energy deposited by the reaction product in the Ar-CO2 material of the gas voxel. In MeV units. 
+	
+	x-voxel, y-voxel, z-voxel = spatial coordinates of location in which the charged particle lost entirely its kinetic energy in the gas voxels.  Coordinates measured with respect to the sample position, which is located at (0,0,0).
+	
+The data included in the ascii file is first sorted into the root file *powtex.root* with the help of the script *CreatePowtexTree.C*. With the help of this script each line in the file (i.e., each neutron event) is converted into an entry of the 'powtex_ev' root tree. 
+The script contains the function CreatePowtexTree() that is loaded into ROOT and executed: 
+	
+	% root -l 
+	root[0] .L CreatePowtexTree.C            (load script)
+	root[1] CreatePowtexTree()               (execute function)
+	
+	       *...........it creates the root tree........*
+	
+	root[..] .q                              (type .q to exit ROOT)
+
+
+	
+If you want to check the content of the *powtex.root* file: 
+	
+	% root -l powtex.root
+	root[0] .ls                        (to list the content of the rootfile)
+	root[1] powtex_ev->Show(10)        (show content of entry #10 of the root tree powtex_ev)
+	
+	       ======> EVENT:10
+ 		tof             = 47027165
+		step_no         = 8
+ 		coat            = 10
+ 		ss_no           = 7
+ 		sec_no          = 1
+ 		module          = 30
+ 		seg             = 2
+ 		voxel           = 3728
+ 		scopy           = 2
+ 		energy          = 0.184066
+ 		weight          = 4.576e-07
+ 		posx            = -512.962
+ 		posy            = 653.351
+ 		posz            = -441.021
+
+	
+	root[..] .q           (quit ROOT)
+	
+The script *ReadLookupTable.C* reads in the voxel lookup table generated during the execution of the code and creates the rootfile powtex_lookup that contains a root tree in which the entries are the individual detector voxels. This script is executed in the same way as the previous one. 
+	
+The script *analysis_powtex.C* reads in the powtex.root and powtex_lookup.root files. This script does several things:
+	- it uses the ID of the detection voxel (information stored in the 'voxel'-branch of the *powtex_ev* tree) and generates the wire and the strip numbers corresponding to that specific voxel. 
+	- it uses the position and TOF information for each detected neutron to calculate the distance from the sample (variable *rad*), the 2theta and phi angles and the wavelength and d_spacing. 
+	- it creates a new root tree *powtex_new* which contains the same branches as the old data tree *powtex_ev* plus a few new branches storing the information on the wire and strip numbers, wavelength, 2theta, phi, d_spacing, etc. 
+	- it loops over all neutron events stored in the *powtex_new* tree and for each neutron event it finds the center of the voxel, information which is stored in the powtex_lookup.root file. This information is saved in the powtex_new_cal.root file, which will contain the powtex_new_cal *tree friend* (read here the concept of *tree friend* https://root.cern/root/htmldoc/guides/users-guide/Trees.html#example-3-adding-friends-to-trees). The tree friend *powtex_new_cal* has the same number of entries as the event data tree *powtex_new*. The branches of the tree friend can be easily accessed like any other branch of the *powtex_new* event tree after being opened with the help of the 'AddFriend' method:
+	
+	% root -l powtex.root
+	root[0] powtex_new->AddFriend("powtex_new_cal","powtex_new_cal.root")
+	root[1] powtex_new->Draw("nposx")                  (it draws the histogram containing the x-pos data of all detected neutrons)
+	root[2] powtex_new->Draw("n_voxel")                  (it draws the histogram containing the x-coordinates of the voxel centers for all detected neutrons)
+	
+A list of ROOT commands that are often used to plot and analyze the ROOT data files generated by the code is included at the end of the analysis_powtex.C script. 
 	
 	
+
 	
+	
+
 	
