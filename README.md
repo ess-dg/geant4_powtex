@@ -166,11 +166,17 @@ The imprint number is used by the code to extract the module and segment number 
   - execute the code in 'interactive mode' with visualization (see also Pct. 6 below):
   
 	% ./Powtex
+	
 	.... 
+	
 	Idle> /control/execute vis.mac
+	
 	....
+	
 	Idle> exit
+	
 	Idle> exit
+	
 	
 6 - USAGE for debugging and learning purposes
 --------------------------------------------
