@@ -1,0 +1,28 @@
+     
+void TrapParamAdjustment(const double (&in)[11], double (&out)[11])
+
+			{
+  				// get input
+  					double dy1 = in[3], dx1 = in[4], dx2 = in[5], alp1 = in[6];
+  					double dy2 = in[7], dx3 = in[8], dx4 = in[9], alp2 = in[10];
+
+  				// adjust alpha
+  				//alp1 = alp2 = (alp1 + alp2)/2.;
+  					alp1 = alp2 = std::atan((std::tan(alp1) + std::tan(alp2))/2.);
+
+  				// adjust dx
+  					double k1 = (dx1 - dx2)/(dy1 + dy1);
+  					double k2 = (dx3 - dx4)/(dy2 + dy2) ;
+  					double k  = (k1 + k2)/2.;
+  					double m1 = (dx1 + dx2)/2.;
+  					double m2 = (dx3 + dx4)/2.;
+  					dx1 = m1 + k*dy1; dx2 = m1 - k*dy1; 
+  					dx3 = m2 + k*dy2; dx4 = m2 - k*dy2; 
+
+  				// set output
+  					out[0] = in[0]; out[1] = in[1]; out[2] = in[2];
+  					out[3] = in[3]; out[4] = dx1; out[5] = dx2; out[6]  = alp1;
+  					out[7] = in[7]; out[8] = dx3; out[9] = dx4; out[10] = alp2;
+
+			}
+			

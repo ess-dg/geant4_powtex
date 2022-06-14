@@ -1,0 +1,19 @@
+     			
+ // declare them in the *icc file, otherwise I get Segmentation fault 
+ // when somewhere in the physics class....there is also something wrong with the 
+ // geometry, most likely memory is screwed up
+ 
+ // G4LogicalVolume*  logicTrdGLtopright[128][32];
+ // G4LogicalVolume*  logicTrdGLtopleft[128][32];
+ // G4LogicalVolume*  logicTrdGLbottomright[128][32];
+ // G4LogicalVolume*  logicTrdGLbottomleft[128][32];
+ 
+  G4LogicalVolume*  logicTrdAl;
+  G4LogicalVolume*  logicTrdB;
+  G4LogicalVolume*  logicTrdCathodeC1;
+  G4LogicalVolume*  logicTrdCathodeC2;
+  G4LogicalVolume*  logicTrdCathodeS;
+ // G4LogicalVolume*  logicTrdGas;  
+  G4LogicalVolume*  logicBShield;
+
+ // G4LogicalVolume*  logicBoxVoxel;

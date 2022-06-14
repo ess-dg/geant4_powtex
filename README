@@ -1,0 +1,12 @@
+Compiled 13-05-2022 by Irina
+Usage 
+
+
+#on the MAC laptop 
+~/geant4_workdir/bin/Darwin-g++/Powtex run.mac 
+
+# compile with cmake geant4-11
+
+./compile_Powtex_cmake.sh
+
+./Powtex

@@ -1,0 +1,90 @@
+//
+// ********************************************************************
+// 1.00 IS, FRM2  
+// ********************************************************************
+//
+#include "PrimaryGeneratorAction.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4PhysicalConstants.hh"
+
+
+#include "G4ios.hh"
+#include "G4Event.hh"
+#include "G4ParticleGun.hh"
+#include "G4ParticleTable.hh"
+#include "G4ParticleDefinition.hh"
+#include "G4GeneralParticleSource.hh"
+#include "G4SPSAngDistribution.hh"
+#include "G4SPSPosDistribution.hh"
+#include "G4SPSEneDistribution.hh"
+#include "globals.hh"
+#include "Randomize.hh"
+#include "G4ios.hh"
+
+//_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+PrimaryGeneratorAction::PrimaryGeneratorAction(){
+
+  G4int n_particle = 1;
+  
+  particleGun = new G4ParticleGun(n_particle);
+  
+  G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+  
+  G4String particleName;
+    
+
+
+}
+
+//_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+PrimaryGeneratorAction::~PrimaryGeneratorAction(){
+    delete particleGun;
+}
+
+//_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
+void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
+
+  
+  G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+  
+  G4String particleName;
+  
+  G4int factor;
+  
+  G4double lam=1.8; //wavelength incoming neutron
+//   G4double lam=0.004; //wavelength incoming proton => E = 511 keV
+
+//   G4double lam = G4RandGauss::shoot(lambda,lambda*0.01);	
+
+   particleGun->SetParticleDefinition(particleTable->
+				     FindParticle(particleName="neutron"));
+   
+  particleGun->SetParticleEnergy(0.081805*eV/lam/lam); // energy as function of lambda. 0.001*0.8191 is a const factor 
+
+   
+  G4double cos_alpha = (G4UniformRand()-0.5)*M_PI/10;  // for the first 3 sumos
+  G4double sin_alpha = std::sqrt(1.-cos_alpha*cos_alpha);
+  G4double phi = (G4UniformRand()-0.5)*M_PI/10;   // vertical 
+
+// uniform and isotropic in 4Pi
+
+//  G4double cos_alpha = 2*G4UniformRand()-1;  // for the first 3 sumos
+//  G4double sin_alpha = std::sqrt(1.-cos_alpha*cos_alpha);
+//  G4double phi = 2*M_PI*G4UniformRand();   // vertical 
+
+   G4double ux = sin_alpha*std::cos(phi),
+           uy = sin_alpha*std::sin(phi),
+           uz = cos_alpha; 
+      
+
+  particleGun->SetParticlePosition(G4ThreeVector(0*cm,0.0*cm,0*cm));
+  particleGun->SetParticleMomentumDirection(G4ThreeVector(ux,uy,uz));  // 4Pi
+
+
+
+   	particleGun->GeneratePrimaryVertex(anEvent);
+
+}
+
+

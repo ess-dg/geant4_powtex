@@ -1,0 +1,93 @@
+
+// Materials used by all Jalousie Detectors
+
+
+
+  G4NistManager* man = G4NistManager::Instance();
+
+  G4Material* matAl  = man->FindOrBuildMaterial("G4_Al");
+  G4Material* matCu  = man->FindOrBuildMaterial("G4_Cu");
+  G4Material* lab_air = man->FindOrBuildMaterial("G4_AIR");
+  G4Material* natB4C = man->FindOrBuildMaterial("G4_BORON_CARBIDE");
+
+  G4String name,symbol;
+  G4double z;
+  G4int natoms;
+  
+  G4double temperature = 293*kelvin; //room temperature
+  G4double pressure = 1.0*atmosphere; 
+
+
+  G4Isotope* B_10 = new G4Isotope("10B", 5, 10, 10.811*g/mole); 
+  G4Isotope* B_11 = new G4Isotope("11B", 5, 11, 11.0093*g/mole); 
+
+  G4Element* boron = new G4Element("EnrichedBoron","B",2);
+             boron->AddIsotope(B_10, 98.*perCent);
+             boron->AddIsotope(B_11, 2.*perCent);
+  
+  G4Element* rB10 = new G4Element("pure 10B","rB10",1);
+             rB10->AddIsotope(B_10,100.*perCent);
+  G4Material* matB10 = new G4Material("rB10", 2.34*g/cm3, 1);
+              matB10-> AddElement(rB10, 1);
+
+  G4Material* B4C = new G4Material ("BoronCarbide",2.34*g/cm3,2);
+              B4C->AddElement(boron, 77.*perCent); // 4 atoms x Z=5 + 1 atom x Z=6 = 100%
+              B4C->AddElement(man->FindOrBuildElement("C"), 23.*perCent);
+  
+  G4Material* Vacuum = new G4Material("Galactic",1,1.01*g/mole,1.e-25*g/cm3,kStateGas,2.73*kelvin,3.e-18*pascal);
+  
+ // from www.aalco.co.uk
+  G4Material* Al5083 = new G4Material("Al5083", 2.65* g/cm3, 3);
+  			  Al5083->AddElement(man->FindOrBuildElement("Mn"), 0.004);
+  			  Al5083->AddElement(man->FindOrBuildElement("Mg"), 0.04);
+  			  Al5083->AddElement(man->FindOrBuildElement("Al"), 0.956);
+
+  // Al 4046 from http://www.matweb.com
+  G4Material* Al4046 = new G4Material("Al4046", 2.66*g/cm3, 3);
+  			  Al4046->AddElement(man->FindOrBuildElement("Al"), 0.897);
+  			  Al4046->AddElement(man->FindOrBuildElement("Si"), 0.1);
+  			  Al4046->AddElement(man->FindOrBuildElement("Mg"), 0.003);
+
+  // Al 6061T6 from http://www.matweb.com
+  G4Material *Al6061T6 = new G4Material("Al6061T6", 2.70*g/cm3, 4);
+  			Al6061T6->AddElement(man->FindOrBuildElement("Al"), 0.975);
+  			Al6061T6->AddElement(man->FindOrBuildElement("Si"), 0.008);
+  			Al6061T6->AddElement(man->FindOrBuildElement("Mg"), 0.01);
+  			Al6061T6->AddElement(man->FindOrBuildElement("Fe"), 0.007);  
+  			  			
+  // given below is a list of commonly used counting gasses in B-lined detectors
+  
+  // when the counting gas is a mixture of NIST gases, e.g., Ar-CO2 70-30:
+  
+  DefineUserGas *uGas = new DefineUserGas(); 
+
+  std::vector<G4Material*> matNames;
+  std::vector<G4double> massFraction;
+
+  matNames.push_back(man->FindOrBuildMaterial("G4_Ar")); massFraction.push_back(0.8);
+  matNames.push_back(man->FindOrBuildMaterial("G4_CARBON_DIOXIDE")); massFraction.push_back(0.2);
+  
+  G4double den  = uGas->GetUserGasDensity(matNames,massFraction); 
+  G4double aeff = uGas->GetUserGasAeff(matNames,massFraction);  	 
+  G4double zeff = uGas->GetUserGasZeff(matNames,massFraction);     
+  
+  G4Material* ArCO2 = new G4Material ("Ar_CO2",zeff,aeff*g/mole,den*g/cm3,kStateGas,temperature, pressure);
+
+ // when the counting gas is not a NIST gas, e.g., CF4:
+
+  std::vector<G4int> nbAtoms;
+  std::vector<G4Element*> elNames;
+
+  elNames.push_back(man->FindOrBuildElement("C")); nbAtoms.push_back(1);
+  elNames.push_back(man->FindOrBuildElement("F")); nbAtoms.push_back(4);
+    
+  G4Material* CF4 = uGas->ConstructUserGas(name="lab_CF4",elNames,nbAtoms,temperature, pressure);
+  
+  elNames.clear();nbAtoms.clear();matNames.clear();massFraction.clear();
+
+
+  world_mat = Vacuum;
+  haube_mat = Al5083;
+  gas_mat   = ArCO2;
+  conv_mat  = B4C;
+  nconv_mat = natB4C; 

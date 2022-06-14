@@ -1,0 +1,5 @@
+G4Material* gas_mat;
+G4Material* haube_mat;
+G4Material* conv_mat;
+G4Material* nconv_mat;
+G4Material* world_mat; 
