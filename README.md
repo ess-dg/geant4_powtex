@@ -20,7 +20,7 @@ The simulation strategy is explained in detail in the following reference:
     powder diffractometer HEIMDAL through GEANT4 simulations, 
     Journal of Instrumentation, 14 P10020, 2019. 
 
-(https://iopscience.iop.org/article/10.1088/1748-0221/14/10/P10020)
+https://iopscience.iop.org/article/10.1088/1748-0221/14/10/P10020
 	
 The usage of the code is sketched in the figures included below, showing the simulation flow:
 
@@ -28,6 +28,10 @@ The usage of the code is sketched in the figures included below, showing the sim
 
 
 <img width="721" alt="Screenshot 2022-06-08 at 13 31 19" src="https://user-images.githubusercontent.com/54177908/172606379-1570482b-1815-4922-9241-b6d141d4a9ff.png">
+
+See also the presentation uploaded to this Indico page (restricted access):
+
+https://indico.esss.lu.se/event/3049/
 
 
 
@@ -47,7 +51,10 @@ The detector setup is defined/constructed in the *DetectorMantelConstruct.icc* i
 
 The *PowtexConstruction.cc* file contains the PowtexConstruction() class which is responsible for the construction and placement of the  detector in the world volume. The code structure consisting of <icc> files for the definition of the detector is inherited from the simulation code developed for the DREAM detector system, which consists of several independent detector types. The PowtexConstruction.cc file also contains the declarations of some of the main variables used to build the Mantle segment. 
 
-In the real detector the common cathode separating the two wire counters in the detector  segment is segmented into strips that cover the same solid angle with respect to the sample position. The gas voxels are being built taking into account the geometry of the real detector voxels (determined by the wire pitch and strip size) and the symmetry of the system. The strips have trapezoidal shapes and their size increases from the center of the segment to the edges (as their location from the sample increases). Also, the strips belonging to the same wire counter (same side of the cathode) are  mirrored with respect to the line that defines the cathode center. The voxels in the second counter (the other side of the cathode) are also a mirrored copy with respect to the cathode plane of the voxels in the first counter. Therefore, out of the 6144 voxels of a detector segment one has to create only 192/2 x 16 = 1536 individual voxels volumes. The sensitive area of the segment will be filled with gas voxels belonging to 4 groups. Thus, in the geometry construction class  the naming 'top left' and  'top right' refer to the voxels filling the upper counter, left and right of the cathode center, respectively, (just remember that in the POWTEX Mantle detector the segments are mounted in horizontal position). The naming  'bottom left' and 'bottom right' refers to the bottom counter (located below the cathode), left and right of the cathode center, respectively.     
+In the real detector the common cathode separating the two wire counters in the detector  segment is segmented into strips that cover the same solid angle with respect to the sample position. The gas voxels are being built taking into account the geometry of the real detector voxels (determined by the wire pitch and strip size) and the symmetry of the system. The strips have trapezoidal shapes and their size increases from the center of the segment to the edges (as their location from the sample increases). Also, the strips belonging to the same wire counter (same side of the cathode) are  mirrored with respect to the line that defines the cathode center. The voxels in the second counter (the other side of the cathode) are also a mirrored copy with respect to the cathode plane of the voxels in the first counter. Therefore, out of the 6144 voxels of a detector segment one has to create only 192/2 x 16 = 1536 individual voxels volumes. The sensitive area of the segment will be filled with gas voxels belonging to 4 groups. Thus, in the geometry construction class  the naming 'top left' and  'top right' refer to the voxels filling the upper counter, left and right of the cathode center, respectively, (just remember that in the POWTEX Mantle detector the segments are mounted in horizontal position). The naming  'bottom left' and 'bottom right' refers to the bottom counter (located below the cathode), left and right of the cathode center, respectively.    
+	
+	The number of detector modules in the frame can be modified by changing the value of the variable *no_modulesM* in the 
+	PowtexConstruction.cc file (line 107). 
 	
 **Generation of the voxel lookup table**
 
